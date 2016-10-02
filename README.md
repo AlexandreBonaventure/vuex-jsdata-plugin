@@ -72,11 +72,8 @@ export default User
     computed: {
       ...mapGetters(['DSUser']),
       user() {
-        return this.DSPoint[this.id]
+        return this.DSUser[this.id]
       },
-    },
-    components: {
-      optionItem,
     },
   }
 </script>
