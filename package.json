@@ -1,0 +1,27 @@
+{
+  "name": "vuex-jsdata-plugin",
+  "version": "0.1.0",
+  "description": "A vuex plugin to sync vuex store with jsdata-store",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlexandreBonaventure/vuex-jsdata-plugin.git"
+  },
+  "keywords": [
+    "vuex",
+    "js-data",
+    "plugin",
+    "store",
+    "model",
+    "data"
+  ],
+  "author": "Alexandre Bonaventure Geissmann",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AlexandreBonaventure/vuex-jsdata-plugin/issues"
+  },
+  "homepage": "https://github.com/AlexandreBonaventure/vuex-jsdata-plugin#readme"
+}
