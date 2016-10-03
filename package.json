@@ -2,9 +2,10 @@
   "name": "vuex-jsdata-plugin",
   "version": "0.1.0",
   "description": "A vuex plugin to sync vuex store with jsdata-store",
-  "main": "index.js",
+  "main": "/dist/vuex-jsdata-plugin.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rollup -c --name vuexjsdataplugin --input index.js --output dist/vuex-jsdata-plugin.js --format umd"
   },
   "repository": {
     "type": "git",
@@ -23,5 +24,11 @@
   "bugs": {
     "url": "https://github.com/AlexandreBonaventure/vuex-jsdata-plugin/issues"
   },
-  "homepage": "https://github.com/AlexandreBonaventure/vuex-jsdata-plugin#readme"
+  "homepage": "https://github.com/AlexandreBonaventure/vuex-jsdata-plugin#readme",
+  "devDependencies": {
+    "babel-plugin-external-helpers": "^6.8.0",
+    "babel-preset-es2015": "^6.16.0",
+    "rollup": "^0.36.1",
+    "rollup-plugin-babel": "^2.6.1"
+  }
 }
