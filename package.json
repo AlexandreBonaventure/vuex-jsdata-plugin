@@ -2,7 +2,7 @@
   "name": "vuex-plugin-jsdata",
   "version": "0.1.0",
   "description": "A vuex plugin to sync vuex store with jsdata-store",
-  "main": "/dist/vuex-jsdata-plugin.js",
+  "main": "dist/vuex-jsdata-plugin.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rollup -c --name vuexjsdataplugin --input index.js --output dist/vuex-jsdata-plugin.js --format umd"
