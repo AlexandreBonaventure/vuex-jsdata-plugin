@@ -46,7 +46,7 @@ var index = function (DStore) {
             type: res.class,
             data: instance }, { silent: true });
         };
-        if (isArray(data)) data.forEach(commit);else commit(data);
+        if (Array.isArray(data)) data.forEach(commit);else commit(data);
       });
     });
   };
