@@ -1,8 +1,8 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-  typeof define === 'function' && define.amd ? define(factory) :
-  (global.vuexjsdataplugin = factory());
-}(this, (function () { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('vue')) :
+  typeof define === 'function' && define.amd ? define(['vue'], factory) :
+  (global.vuexjsdataplugin = factory(global.vue));
+}(this, (function (vue) { 'use strict';
 
 var index = function (DStore) {
   if (!DStore) {
@@ -31,10 +31,10 @@ var index = function (DStore) {
 
           var namespace = state[type];
           if (!namespace) {
-            Vue.set(state, type, {});
+            vue.set(state, type, {});
             namespace = state[type];
           }
-          Vue.set(namespace, id, Object.assign({}, data)); // assign to trigger reactivity
+          vue.set(namespace, id, Object.assign({}, data)); // assign to trigger reactivity
         }
       }
     };

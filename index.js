@@ -1,3 +1,4 @@
+import { set } from "vue"
 
 export default function(DStore) {
   if (!DStore) {
@@ -19,10 +20,10 @@ export default function(DStore) {
           const { id } = data
           let namespace = state[type]
           if (!namespace) {
-            Vue.set(state, type, {})
+            set(state, type, {})
             namespace = state[type]
           }
-          Vue.set(namespace, id, Object.assign({}, data)) // assign to trigger reactivity
+          set(namespace, id, Object.assign({}, data)) // assign to trigger reactivity
         },
       },
     }
