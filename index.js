@@ -33,7 +33,7 @@ export default function(DStore) {
           type: res.class,
           data: instance, //JSON.parse(JSON.stringify(instance)),
         }, { silent: true })
-        if (isArray(data)) data.forEach(commit)
+        if (Array.isArray(data)) data.forEach(commit)
         else commit(data)
       })
     })
