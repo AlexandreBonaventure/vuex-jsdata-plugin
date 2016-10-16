@@ -1,9 +1,14 @@
 import { set } from "vue"
+import get from "lodash.get"
 
-export default function(DStore, {
+const config = {}
+let DStore
+
+export default function(_DStore, {
   namespace = 'DS',
   silent = true,
 } = {}) {
+  DStore = _DStore
   if (!DStore) {
     console.warn('You must initialize vuex-jsdata-plugin with a DS store object from js-data')
     return
@@ -44,4 +49,24 @@ export default function(DStore, {
       })
     })
   }
+}
+
+export function mapRessources(ressources = []) {
+  function generateGetter(name, key) {
+    return function getter() {
+      // console.log(this.$store);
+      // console.log(this.$store.getters[`DS${name}`][key]);
+      // return this.$store.getters[`DS${name}`][key]
+      // console.log(Store)
+      this.$store.getters[`DS${name}`][key]
+      return DStore.get(name, get(this, key))
+    }
+  }
+  const ressourceGetters = ressources.reduce((sum, ressource) => {
+    const getterName = Object.keys(ressource)[0]
+    ressource[getterName] = generateGetter(...ressource[getterName])
+    return Object.assign(sum, ressource)
+  }, {})
+  console.log(ressourceGetters);
+  return ressourceGetters
 }
