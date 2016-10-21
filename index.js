@@ -2,6 +2,7 @@ import { set } from "vue"
 import get from "lodash.get"
 
 const config = {}
+const MUTATION = 'datastore/REFRESH_DATASTORE'
 let DStore
 
 export default function(_DStore, {
@@ -13,6 +14,7 @@ export default function(_DStore, {
     console.warn('You must initialize vuex-jsdata-plugin with a DS store object from js-data')
     return
   }
+
   return function(store) {
     const ressources = Object.values(DStore.definitions)
     let getters = {}
@@ -30,7 +32,7 @@ export default function(_DStore, {
       state: moduleState, // init ressource state
       getters,
       mutations: {
-        REFRESH_DATASTORE(state, { type, data }) {
+        [MUTATION](state, { type, data }) {
           const { id } = data
           const namespace = state[type]
           set(namespace, id, Object.assign({}, data)) // assign to trigger reactivity
@@ -39,10 +41,10 @@ export default function(_DStore, {
     }
     store.registerModule('DS', module)
     ressources.forEach((ressource) => {
-      ressource.on('DS.afterInject', (res, data) => {
-        const commit = instance => store.commit('REFRESH_DATASTORE', {
+      ressource.on('DS.change', (res, data) => {
+        const commit = instance => store.commit(MUTATION, {
           type: res.class,
-          data: instance, //JSON.parse(JSON.stringify(instance)),
+          data: instance,
         }, { silent })
         if (Array.isArray(data)) data.forEach(commit)
         else commit(data)
@@ -54,12 +56,10 @@ export default function(_DStore, {
 export function mapRessources(ressources = []) {
   function generateGetter(name, key) {
     return function getter() {
-      // console.log(this.$store);
-      // console.log(this.$store.getters[`DS${name}`][key]);
-      // return this.$store.getters[`DS${name}`][key]
-      // console.log(Store)
-      this.$store.getters[`DS${name}`][key]
-      return DStore.get(name, get(this, key))
+      var id = get(this, key);
+      if (!id) return undefined
+      this.$store.state.DS[name][id] // !IMPORTANT trigger reactivity
+      return DStore.get(name, id);
     }
   }
   const ressourceGetters = ressources.reduce((sum, ressource) => {

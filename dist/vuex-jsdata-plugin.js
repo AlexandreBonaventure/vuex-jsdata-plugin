@@ -131,7 +131,20 @@ var asyncGenerator = function () {
 
 
 
+var defineProperty = function (obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
 
+  return obj;
+};
 
 var get$1 = function get$1(object, property, receiver) {
   if (object === null) object = Function.prototype;
@@ -220,6 +233,7 @@ var toConsumableArray = function (arr) {
   }
 };
 
+var MUTATION = 'datastore/REFRESH_DATASTORE';
 var DStore = void 0;
 
 var index = function (_DStore) {
@@ -235,6 +249,7 @@ var index = function (_DStore) {
     console.warn('You must initialize vuex-jsdata-plugin with a DS store object from js-data');
     return;
   }
+
   return function (store) {
     var ressources = Object.values(DStore.definitions);
     var getters = {};
@@ -257,42 +272,39 @@ var index = function (_DStore) {
     var module = {
       state: moduleState, // init ressource state
       getters: getters,
-      mutations: {
-        REFRESH_DATASTORE: function REFRESH_DATASTORE(state, _ref3) {
-          var type = _ref3.type;
-          var data = _ref3.data;
-          var id = data.id;
+      mutations: defineProperty({}, MUTATION, function (state, _ref3) {
+        var type = _ref3.type;
+        var data = _ref3.data;
+        var id = data.id;
 
-          var namespace = state[type];
-          vue.set(namespace, id, Object.assign({}, data)); // assign to trigger reactivity
-        }
-      }
+        var namespace = state[type];
+        vue.set(namespace, id, Object.assign({}, data)); // assign to trigger reactivity
+      })
     };
     store.registerModule('DS', module);
     ressources.forEach(function (ressource) {
-      ressource.on('DS.afterInject', function (res, data) {
+      ressource.on('DS.change', function (res, data) {
         var commit = function commit(instance) {
-          return store.commit('REFRESH_DATASTORE', {
+          return store.commit(MUTATION, {
             type: res.class,
-            data: instance }, { silent: silent });
+            data: instance
+          }, { silent: silent });
         };
         if (Array.isArray(data)) data.forEach(commit);else commit(data);
       });
     });
   };
-}
+};
 
 function mapRessources() {
   var ressources = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 
   function generateGetter(name, key) {
     return function getter() {
-      // console.log(this.$store);
-      // console.log(this.$store.getters[`DS${name}`][key]);
-      // return this.$store.getters[`DS${name}`][key]
-      // console.log(Store)
-      this.$store.getters["DS" + name][key];
-      return DStore.get(name, get(this, key));
+      var id = get(this, key);
+      if (!id) return undefined;
+      this.$store.state.DS[name][id]; // !IMPORTANT trigger reactivity
+      return DStore.get(name, id);
     };
   }
   var ressourceGetters = ressources.reduce(function (sum, ressource) {
