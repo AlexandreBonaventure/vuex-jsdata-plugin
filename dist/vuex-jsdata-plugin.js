@@ -282,19 +282,29 @@ var index = function (_DStore) {
       })
     };
     store.registerModule('DS', module);
+
+    function commitRefresh(res, data) {
+      var commit = function commit(instance) {
+        vue.set(instance, '__refresh', !instance.__refresh);
+        store.commit(MUTATION, {
+          type: res.class,
+          data: instance
+        }, { silent: silent });
+      };
+      if (Array.isArray(data)) data.forEach(commit);else commit(data);
+    }
+
     ressources.forEach(function (ressource) {
+      ressource.on('Refresh', function (res, id) {
+        var data = res.get(id);
+        commitRefresh(res, data);
+      });
       ressource.on('DS.change', function (res, data) {
-        var commit = function commit(instance) {
-          return store.commit(MUTATION, {
-            type: res.class,
-            data: instance
-          }, { silent: silent });
-        };
-        if (Array.isArray(data)) data.forEach(commit);else commit(data);
+        return commitRefresh(res, data);
       });
     });
   };
-};
+}
 
 function mapRessources() {
   var ressources = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];

@@ -40,15 +40,25 @@ export default function(_DStore, {
       },
     }
     store.registerModule('DS', module)
-    ressources.forEach((ressource) => {
-      ressource.on('DS.change', (res, data) => {
-        const commit = instance => store.commit(MUTATION, {
+
+    function commitRefresh(res, data) {
+      const commit = instance => {
+        set(instance, '__refresh', !instance.__refresh)
+        store.commit(MUTATION, {
           type: res.class,
           data: instance,
         }, { silent })
-        if (Array.isArray(data)) data.forEach(commit)
-        else commit(data)
+      }
+      if (Array.isArray(data)) data.forEach(commit)
+      else commit(data)
+    }
+
+    ressources.forEach((ressource) => {
+      ressource.on('Refresh', (res, id) => {
+        const data = res.get(id)
+        commitRefresh(res, data)
       })
+      ressource.on('DS.change', (res, data) => commitRefresh(res, data))
     })
   }
 }

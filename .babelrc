@@ -8,6 +8,6 @@
     ]
   ],
   "plugins": [
-    "external-helpers"
+    "external-helpers",
   ]
 }
