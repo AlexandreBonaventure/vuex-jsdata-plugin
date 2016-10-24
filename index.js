@@ -1,8 +1,9 @@
-import { set } from "vue"
+import { set, delete as remove } from "vue"
 import get from "lodash.get"
 
 const config = {}
 const MUTATION = 'datastore/REFRESH_DATASTORE'
+const MUTATION_DELETE = 'datastore/DELETE'
 let DStore
 
 export default function(_DStore, {
@@ -37,14 +38,29 @@ export default function(_DStore, {
           const namespace = state[type]
           set(namespace, id, Object.assign({}, data)) // assign to trigger reactivity
         },
+        [MUTATION_DELETE](state, { type, data }) {
+          const { id } = data
+          const namespace = state[type]
+          remove(namespace, id) // assign to trigger reactivity
+        },
       },
     }
     store.registerModule('DS', module)
 
     function commitRefresh(res, data) {
       const commit = instance => {
-        set(instance, '__refresh', !instance.__refresh)
+        // set(instance, '__refresh', !instance.__refresh)
         store.commit(MUTATION, {
+          type: res.class,
+          data: instance,
+        }, { silent })
+      }
+      if (Array.isArray(data)) data.forEach(commit)
+      else commit(data)
+    }
+    function commitDelete(res, data) {
+      const commit = instance => {
+        store.commit(MUTATION_DELETE, {
           type: res.class,
           data: instance,
         }, { silent })
@@ -59,6 +75,10 @@ export default function(_DStore, {
         commitRefresh(res, data)
       })
       ressource.on('DS.change', (res, data) => commitRefresh(res, data))
+      ressource.on('DS.afterDestroy', (res, data) => {
+        res.off('DS.change')
+        commitDelete(res, data)
+      })
     })
   }
 }

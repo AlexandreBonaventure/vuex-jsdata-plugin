@@ -234,6 +234,7 @@ var toConsumableArray = function (arr) {
 };
 
 var MUTATION = 'datastore/REFRESH_DATASTORE';
+var MUTATION_DELETE = 'datastore/DELETE';
 var DStore = void 0;
 
 var index = function (_DStore) {
@@ -251,6 +252,8 @@ var index = function (_DStore) {
   }
 
   return function (store) {
+    var _mutations;
+
     var ressources = Object.values(DStore.definitions);
     var getters = {};
     var moduleState = {};
@@ -272,21 +275,37 @@ var index = function (_DStore) {
     var module = {
       state: moduleState, // init ressource state
       getters: getters,
-      mutations: defineProperty({}, MUTATION, function (state, _ref3) {
+      mutations: (_mutations = {}, defineProperty(_mutations, MUTATION, function (state, _ref3) {
         var type = _ref3.type;
         var data = _ref3.data;
         var id = data.id;
 
         var namespace = state[type];
         vue.set(namespace, id, Object.assign({}, data)); // assign to trigger reactivity
-      })
+      }), defineProperty(_mutations, MUTATION_DELETE, function (state, _ref4) {
+        var type = _ref4.type;
+        var data = _ref4.data;
+        var id = data.id;
+
+        var namespace = state[type];
+        vue.delete(namespace, id); // assign to trigger reactivity
+      }), _mutations)
     };
     store.registerModule('DS', module);
 
     function commitRefresh(res, data) {
       var commit = function commit(instance) {
-        vue.set(instance, '__refresh', !instance.__refresh);
+        // set(instance, '__refresh', !instance.__refresh)
         store.commit(MUTATION, {
+          type: res.class,
+          data: instance
+        }, { silent: silent });
+      };
+      if (Array.isArray(data)) data.forEach(commit);else commit(data);
+    }
+    function commitDelete(res, data) {
+      var commit = function commit(instance) {
+        store.commit(MUTATION_DELETE, {
           type: res.class,
           data: instance
         }, { silent: silent });
@@ -302,9 +321,12 @@ var index = function (_DStore) {
       ressource.on('DS.change', function (res, data) {
         return commitRefresh(res, data);
       });
+      ressource.on('DS.afterDestroy', function (res, data) {
+        return commitDelete(res, data);
+      });
     });
   };
-}
+};
 
 function mapRessources() {
   var ressources = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
