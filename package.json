@@ -5,7 +5,8 @@
   "main": "dist/vuex-jsdata-plugin.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rollup -c --name vuexjsdataplugin --input index.js --output dist/vuex-jsdata-plugin.js --format umd"
+    "build": "rollup -c --name vuexjsdataplugin --input index.js --output dist/vuex-jsdata-plugin.js --format umd",
+    "example-simple": "NODE_PATH=$NODE_PATH:examples/simple budo examples/simple/index.js --open -d . --live -- --paths -t [ babelify --presets [ es2015 ] --plugins [external-helpers-2] --sourceType module] -p [ babelify-external-helpers ]"
   },
   "repository": {
     "type": "git",
@@ -33,9 +34,15 @@
   },
   "devDependencies": {
     "babel-plugin-external-helpers": "^6.8.0",
-    "babel-preset-es2015": "^6.16.0",
+    "babel-preset-es2015": "^6.18.0",
+    "babelify": "^7.3.0",
+    "babelify-external-helpers": "^1.1.0",
+    "budo": "^9.2.2",
+    "js-data": "^2.9.0",
     "rollup": "^0.36.1",
-    "rollup-plugin-babel": "^2.6.1"
+    "rollup-plugin-babel": "^2.6.1",
+    "vue": "^1.0.28",
+    "vuex": "^2.0.0"
   },
   "browserify-shim": {}
 }

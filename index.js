@@ -26,7 +26,7 @@ export default function(_DStore, {
     ressources.forEach(({ class: ressourceName }) => {
       const key = `${namespace}${ressourceName}`
       getters[key] = (state) => state[ressourceName]
-      moduleState[ressourceName] = {}
+      set(moduleState, ressourceName, {})
     })
 
     const module = {
@@ -36,7 +36,7 @@ export default function(_DStore, {
         [MUTATION](state, { type, data }) {
           const { id } = data
           const namespace = state[type]
-          set(namespace, id, Object.assign({}, data)) // assign to trigger reactivity
+          set(namespace, id, Object.assign(JSON.parse(JSON.stringify(data)))) // assign to trigger reactivity
         },
         [MUTATION_DELETE](state, { type, data }) {
           const { id } = data
@@ -78,6 +78,11 @@ export default function(_DStore, {
       ressource.on('DS.afterDestroy', (res, data) => {
         res.off('DS.change')
         commitDelete(res, data)
+        setTimeout(() => { // FIXME
+          res.on('DS.change', function (res, data) {
+            commitRefresh(res, data);
+          });
+        }, 100)
       })
     })
   }
@@ -86,9 +91,11 @@ export default function(_DStore, {
 export function mapRessources(ressources = []) {
   function generateGetter(name, key) {
     return function getter() {
-      var id = get(this, key);
-      if (!id) return undefined
-      this.$store.state.DS[name][id] // !IMPORTANT trigger reactivity
+      const id = get(this, key)
+      if (id === null || id === undefined || !this.$store.state.DS[name][id]) {
+        console.warn('no ressource with id:' + id)
+        return undefined
+      } // !IMPORTANT trigger reactivity
       return DStore.get(name, id);
     }
   }
@@ -97,6 +104,5 @@ export function mapRessources(ressources = []) {
     ressource[getterName] = generateGetter(...ressource[getterName])
     return Object.assign(sum, ressource)
   }, {})
-  console.log(ressourceGetters);
   return ressourceGetters
 }

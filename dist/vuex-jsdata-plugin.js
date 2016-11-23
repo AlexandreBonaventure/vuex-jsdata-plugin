@@ -238,12 +238,11 @@ var MUTATION_DELETE = 'datastore/DELETE';
 var DStore = void 0;
 
 var index = function (_DStore) {
-  var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-  var _ref$namespace = _ref.namespace;
-  var namespace = _ref$namespace === undefined ? 'DS' : _ref$namespace;
-  var _ref$silent = _ref.silent;
-  var silent = _ref$silent === undefined ? true : _ref$silent;
+  var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+      _ref$namespace = _ref.namespace,
+      namespace = _ref$namespace === undefined ? 'DS' : _ref$namespace,
+      _ref$silent = _ref.silent,
+      silent = _ref$silent === undefined ? true : _ref$silent;
 
   DStore = _DStore;
   if (!DStore) {
@@ -269,22 +268,22 @@ var index = function (_DStore) {
       getters[key] = function (state) {
         return state[ressourceName];
       };
-      moduleState[ressourceName] = {};
+      vue.set(moduleState, ressourceName, {});
     });
 
     var module = {
       state: moduleState, // init ressource state
       getters: getters,
       mutations: (_mutations = {}, defineProperty(_mutations, MUTATION, function (state, _ref3) {
-        var type = _ref3.type;
-        var data = _ref3.data;
+        var type = _ref3.type,
+            data = _ref3.data;
         var id = data.id;
 
         var namespace = state[type];
-        vue.set(namespace, id, Object.assign({}, data)); // assign to trigger reactivity
+        vue.set(namespace, id, Object.assign(JSON.parse(JSON.stringify(data)))); // assign to trigger reactivity
       }), defineProperty(_mutations, MUTATION_DELETE, function (state, _ref4) {
-        var type = _ref4.type;
-        var data = _ref4.data;
+        var type = _ref4.type,
+            data = _ref4.data;
         var id = data.id;
 
         var namespace = state[type];
@@ -322,7 +321,14 @@ var index = function (_DStore) {
         return commitRefresh(res, data);
       });
       ressource.on('DS.afterDestroy', function (res, data) {
-        return commitDelete(res, data);
+        res.off('DS.change');
+        commitDelete(res, data);
+        setTimeout(function () {
+          // FIXME
+          res.on('DS.change', function (res, data) {
+            commitRefresh(res, data);
+          });
+        }, 100);
       });
     });
   };
@@ -334,8 +340,10 @@ function mapRessources() {
   function generateGetter(name, key) {
     return function getter() {
       var id = get(this, key);
-      if (!id) return undefined;
-      this.$store.state.DS[name][id]; // !IMPORTANT trigger reactivity
+      if (id === null || id === undefined || !this.$store.state.DS[name][id]) {
+        console.warn('no ressource with id:' + id);
+        return undefined;
+      } // !IMPORTANT trigger reactivity
       return DStore.get(name, id);
     };
   }
@@ -344,7 +352,6 @@ function mapRessources() {
     ressource[getterName] = generateGetter.apply(undefined, toConsumableArray(ressource[getterName]));
     return Object.assign(sum, ressource);
   }, {});
-  console.log(ressourceGetters);
   return ressourceGetters;
 }
 
