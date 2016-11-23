@@ -86,7 +86,12 @@ export default User
 ```
 
 # Example
-Not yet
+Clone the repo and run
+```
+npm install
+npm run example-simple
+```
+more to come ...
 
 # TO-DO
   [ ] handle config options
