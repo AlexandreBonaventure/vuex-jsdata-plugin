@@ -1,10 +1,24 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('vue'), require('lodash.get')) :
-  typeof define === 'function' && define.amd ? define(['exports', 'vue', 'lodash.get'], factory) :
-  (factory((global.vuexjsdataplugin = global.vuexjsdataplugin || {}),global.vue,global.get));
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('vue'), require('lodash.get')) :
+	typeof define === 'function' && define.amd ? define(['exports', 'vue', 'lodash.get'], factory) :
+	(factory((global.vuexjsdataplugin = global.vuexjsdataplugin || {}),global.vue,global.get));
 }(this, (function (exports,vue,get) { 'use strict';
 
 get = 'default' in get ? get['default'] : get;
+
+// Object.values polyfill (borrowed from https://github.com/tc39/proposal-object-values-entries/blob/master/polyfill.js)
+var reduce = Function.bind.call(Function.call, Array.prototype.reduce);
+var isEnumerable = Function.bind.call(Function.call, Object.prototype.propertyIsEnumerable);
+var concat = Function.bind.call(Function.call, Array.prototype.concat);
+var keys = Reflect.ownKeys;
+
+if (!Object.values) {
+	Object.values = function values(O) {
+		return reduce(keys(O), function (v, k) {
+			return concat(v, typeof k === 'string' && isEnumerable(O, k) ? [O[k]] : []);
+		}, []);
+	};
+}
 
 var asyncGenerator = function () {
   function AwaitValue(value) {
@@ -317,9 +331,7 @@ var index = function (_DStore) {
         var data = res.get(id);
         commitRefresh(res, data);
       });
-      ressource.on('DS.change', function (res, data) {
-        return commitRefresh(res, data);
-      });
+      // ressource.on('DS.change', (res, data) => commitRefresh(res, data))
       ressource.on('DS.afterDestroy', function (res, data) {
         res.off('DS.change');
         commitDelete(res, data);
@@ -330,9 +342,17 @@ var index = function (_DStore) {
           });
         }, 100);
       });
+      var refreshCb = function refreshCb(res, data) {
+        return commitRefresh(res, data);
+      };
+      ressource.on('DS.afterInject', function handler(res, data) {
+        refreshCb(res, data);
+        // ressource.off('DS.afterInject', handler)
+        // ressource.on('DS.change', refreshCb)
+      });
     });
   };
-};
+}
 
 function mapRessources() {
   var ressources = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];

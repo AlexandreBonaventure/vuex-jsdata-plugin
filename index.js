@@ -1,5 +1,6 @@
 import { set, delete as remove } from "vue"
 import get from "lodash.get"
+import './utils/polyfill'
 
 const config = {}
 const MUTATION = 'datastore/REFRESH_DATASTORE'
@@ -74,7 +75,7 @@ export default function(_DStore, {
         const data = res.get(id)
         commitRefresh(res, data)
       })
-      ressource.on('DS.change', (res, data) => commitRefresh(res, data))
+      // ressource.on('DS.change', (res, data) => commitRefresh(res, data))
       ressource.on('DS.afterDestroy', (res, data) => {
         res.off('DS.change')
         commitDelete(res, data)
@@ -83,6 +84,12 @@ export default function(_DStore, {
             commitRefresh(res, data);
           });
         }, 100)
+      })
+      const refreshCb = (res, data) => commitRefresh(res, data)
+      ressource.on('DS.afterInject', function handler(res, data) {
+        refreshCb(res, data)
+        // ressource.off('DS.afterInject', handler)
+        // ressource.on('DS.change', refreshCb)
       })
     })
   }
