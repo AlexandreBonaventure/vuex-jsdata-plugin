@@ -55,9 +55,6 @@ export const User = store.defineResource({
   name: 'user',
   endpoint: 'users',
 })
-
-store.registerModel('User', User)
-export default User
 ```
 ```
 // in a .vue component
