@@ -81,6 +81,37 @@ export const User = store.defineResource({
 </template>
 
 ```
+## global helper
+This plugin provide a handy way to make a ressource available inside components.
+### mapRessources
+mapRessources([
+  { nameOfTheGetter: [nameOfTheRessource:string, id_key:string]},
+  ...
+])
+mapRessources is a getter factory designed to get a single record which id is computed from $vm[id_key].
+Its really useful for getting specific records dynamicly (eg: get user with id picked from router params)
+example:
+```
+// in store - DSUsers: { 1: { name: 'Alex' } }
+// component definition
+// using the object spread operator
+$vm = {
+  data() {
+    return {
+      user_id: 1
+    }
+  },
+  computed: {
+    ...mapRessources([
+      { user: ['User', 'user_id'] }
+      { userFromRoute: ['User', '$route.params.id'] } // with vue-router
+    ]),
+  }
+}
+// Log
+$vm.user.name -> 'Alex'
+$vm.userFromRoute.name -> 'Alex'
+```
 
 # Example
 Clone the repo and run
