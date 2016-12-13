@@ -41,7 +41,7 @@
     "js-data": "^2.9.0",
     "rollup": "^0.36.1",
     "rollup-plugin-babel": "^2.6.1",
-    "vue": "^1.0.28",
+    "vue": "^2.1.4",
     "vuex": "^2.0.0"
   },
   "browserify-shim": {}

@@ -1,5 +1,5 @@
-// import Vue from 'vue/dist/vue.common.js'
-import Vue from 'vue'
+import Vue from 'vue/dist/vue.common.js'
+// import Vue from 'vue'
 import { mapRessources } from '../../dist/vuex-jsdata-plugin.js'
 import { mapGetters } from 'vuex'
 
@@ -41,13 +41,13 @@ const vm = new Vue({
   <div>
     <h1>{{msg}}</h1>
     <b>Comments:</b>
-    <pre>{{comments | json}}</pre>
+    <pre>{{comments}}</pre>
 
     <b>Users:</b>
-    <pre>{{users | json}}</pre>
+    <pre>{{users}}</pre>
 
     <b>Specific User:</b>
-    <pre>{{user | json}}</pre>
+    <pre>{{user}}</pre>
 
     <p>Please, open your DevTool</p>
   </div>
