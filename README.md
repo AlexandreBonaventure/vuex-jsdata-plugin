@@ -118,7 +118,9 @@ Clone the repo and run
 ```
 npm install
 npm run example-simple
+=> go to /examples/simple
 ```
+
 more to come ...
 
 # TO-DO
