@@ -1,8 +1,9 @@
-import { set, delete as remove } from "vue"
+import Vue from "vue"
 import get from "lodash.get"
 import './utils/polyfill'
 
 const config = {}
+const { set, delete: remove } = Vue
 const MUTATION = 'datastore/REFRESH_DATASTORE'
 const MUTATION_DELETE = 'datastore/DELETE'
 let DStore
