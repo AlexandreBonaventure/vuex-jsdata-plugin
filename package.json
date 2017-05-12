@@ -1,6 +1,6 @@
 {
   "name": "vuex-plugin-jsdata",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "A vuex plugin to sync vuex store with jsdata-store",
   "main": "dist/vuex-jsdata-plugin.js",
   "module": "index.js",
