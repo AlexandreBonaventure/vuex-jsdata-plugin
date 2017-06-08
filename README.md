@@ -1,7 +1,7 @@
 # vuex-jsdata-plugin
 A simple attempt to help using jsdata alongside Vue.js:
 This plugin syncing Vuex store with js-data
-After each injection made by js-data some silent mutations are triggered to ensure vuex store is kept in sync with your ressources (and trigger reactivity).
+After each injection made by js-data some silent mutations are triggered to ensure vuex store is kept in sync with your resources (and trigger reactivity).
 
 Read more : https://github.com/js-data/js-data/issues/57
 
@@ -37,7 +37,7 @@ new Vuex.Store({
 
 ```
 # How does it work ?
-Every change in a js-data ressource are made with the DSInject method.
+Every change in a js-data resource are made with the DSInject method.
 The plugin manage the state tree(vuex) under a DS module by listening to the afterInject hook (js-data)
 
 ## mutation
@@ -45,7 +45,7 @@ vuex-plugin-jsdata fire only one silent mutation :
 ``REFRESH_DATASTORE``
 
 ## getters
-Although all local ressources injected in the jsdata-store can be found in the vuex store under the namespaced module DS, the plugin provide automatic getters for every model.
+Although all local resources injected in the jsdata-store can be found in the vuex store under the namespaced module DS, the plugin provide automatic getters for every model.
 
 Ex:
 ```
@@ -82,13 +82,13 @@ export const User = store.defineResource({
 
 ```
 ## global helper
-This plugin provide a handy way to make a ressource available inside components.
-### mapRessources
-mapRessources([
-  { nameOfTheGetter: [nameOfTheRessource:string, id_key:string]},
+This plugin provide a handy way to make a resource available inside components.
+### mapResources
+mapResources([
+  { nameOfTheGetter: [nameOfTheResource:string, id_key:string]},
   ...
 ])
-mapRessources is a getter factory designed to get a single record which id is computed from $vm[id_key].
+mapResources is a getter factory designed to get a single record which id is computed from $vm[id_key].
 Its really useful for getting specific records dynamicly (eg: get user with id picked from router params)
 example:
 ```
@@ -102,7 +102,7 @@ $vm = {
     }
   },
   computed: {
-    ...mapRessources([
+    ...mapResources([
       { user: ['User', 'user_id'] }
       { userFromRoute: ['User', '$route.params.id'] } // with vue-router
     ]),
