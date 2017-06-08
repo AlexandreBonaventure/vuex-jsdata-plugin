@@ -1,6 +1,6 @@
 import Vue from 'vue/dist/vue.common.js'
 // import Vue from 'vue'
-import { mapRessources } from '../../dist/vuex-jsdata-plugin.js'
+import { mapResources } from '../../dist/vuex-jsdata-plugin.js'
 import { mapGetters } from 'vuex'
 
 // Init JsDataStore
@@ -60,7 +60,7 @@ const vm = new Vue({
     // mapGetters([
     //   'DSUser',
     // ]),
-    mapRessources([
+    mapResources([
       { user: ['User', 'user_id'] },
     ])
   ),

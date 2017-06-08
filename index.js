@@ -19,20 +19,20 @@ export default function(_DStore, {
   }
 
   return function(store) {
-    const ressources = Object.values(DStore.definitions)
+    const resources = Object.values(DStore.definitions)
     let getters = {}
     let moduleState = {}
     set(store.state, namespace, {}) // init state
     getters[namespace] = (state) => state[namespace] // set global getter
 
-    ressources.forEach(({ class: ressourceName }) => {
-      const key = `${namespace}${ressourceName}`
-      getters[key] = (state) => state[ressourceName]
-      set(moduleState, ressourceName, {})
+    resources.forEach(({ class: resourceName }) => {
+      const key = `${namespace}${resourceName}`
+      getters[key] = (state) => state[resourceName]
+      set(moduleState, resourceName, {})
     })
 
     const module = {
-      state: moduleState, // init ressource state
+      state: moduleState, // init resource state
       getters,
       mutations: {
         [MUTATION](state, { type, data }) {
@@ -71,13 +71,13 @@ export default function(_DStore, {
       else commit(data)
     }
 
-    ressources.forEach((ressource) => {
-      ressource.on('Refresh', (res, id) => {
+    resources.forEach((resource) => {
+      resource.on('Refresh', (res, id) => {
         const data = res.get(id)
         commitRefresh(res, data)
       })
-      // ressource.on('DS.change', (res, data) => commitRefresh(res, data))
-      ressource.on('DS.afterDestroy', (res, data) => {
+      // resource.on('DS.change', (res, data) => commitRefresh(res, data))
+      resource.on('DS.afterDestroy', (res, data) => {
         res.off('DS.change')
         commitDelete(res, data)
         setTimeout(() => { // FIXME
@@ -87,30 +87,30 @@ export default function(_DStore, {
         }, 100)
       })
       const refreshCb = (res, data) => commitRefresh(res, data)
-      ressource.on('DS.afterInject', function handler(res, data) {
+      resource.on('DS.afterInject', function handler(res, data) {
         refreshCb(res, data)
-        // ressource.off('DS.afterInject', handler)
-        // ressource.on('DS.change', refreshCb)
+        // resource.off('DS.afterInject', handler)
+        // resource.on('DS.change', refreshCb)
       })
     })
   }
 }
 
-export function mapRessources(ressources = []) {
+export function mapResources(resources = []) {
   function generateGetter(name, key) {
     return function getter() {
       const id = get(this, key)
       if (id === null || id === undefined || !this.$store.state.DS[name][id]) {
-        console.warn('no ressource with id:' + id)
+        console.warn('no resource with id:' + id)
         return undefined
       } // !IMPORTANT trigger reactivity
       return DStore.get(name, id);
     }
   }
-  const ressourceGetters = ressources.reduce((sum, ressource) => {
-    const getterName = Object.keys(ressource)[0]
-    ressource[getterName] = generateGetter(...ressource[getterName])
-    return Object.assign(sum, ressource)
+  const resourceGetters = resources.reduce((sum, resource) => {
+    const getterName = Object.keys(resource)[0]
+    resource[getterName] = generateGetter(...resource[getterName])
+    return Object.assign(sum, resource)
   }, {})
-  return ressourceGetters
+  return resourceGetters
 }
